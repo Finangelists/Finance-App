@@ -14,7 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import java.text.NumberFormat;
 
@@ -24,6 +26,9 @@ public class MainActivity extends ActionBarActivity
 
     private EditText editTextMoney;
     private EditText editTextDescription;
+    private Button btnSubmit;
+    private ListView listViewMain;
+    private Boolean textClear = false;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -50,6 +55,8 @@ public class MainActivity extends ActionBarActivity
 
         editTextMoney = (EditText) findViewById(R.id.txtMoneyEntered);
         editTextDescription = (EditText) findViewById(R.id.txtDescription);
+        btnSubmit = (Button) findViewById(R.id.btnSubmit);
+        listViewMain = (ListView) findViewById((R.id.listViewMain));
 
         editTextMoney.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,25 +67,38 @@ public class MainActivity extends ActionBarActivity
             private String current = "";
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!s.toString().equals(current)){
-                    editTextMoney.removeTextChangedListener(this);
+                if (!textClear) {
+                    if (!s.toString().equals(current)) {
+                        editTextMoney.removeTextChangedListener(this);
 
-                    String cleanString = s.toString().replaceAll("[$,.]", "");
+                        String cleanString = s.toString().replaceAll("[$,.]", "");
 
-                    double parsed = Double.parseDouble(cleanString);
-                    String formatted = NumberFormat.getCurrencyInstance().format((parsed/100));
+                        double parsed = Double.parseDouble(cleanString);
+                        String formatted = NumberFormat.getCurrencyInstance().format((parsed / 100));
 
-                    current = formatted;
-                    editTextMoney.setText(formatted);
-                    editTextMoney.setSelection(formatted.length());
+                        current = formatted;
+                        editTextMoney.setText(formatted);
+                        editTextMoney.setSelection(formatted.length());
 
-                    editTextMoney.addTextChangedListener(this);
+                        editTextMoney.addTextChangedListener(this);
+                    }
                 }
+                else
+                    textClear = false;
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textClear = true;
+                editTextMoney.getText().clear();
+                editTextDescription.setText("");
             }
         });
 
