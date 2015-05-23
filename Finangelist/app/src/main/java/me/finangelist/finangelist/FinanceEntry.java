@@ -1,7 +1,9 @@
 package me.finangelist.finangelist;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Marc on 05/23/2015.
@@ -10,9 +12,37 @@ public class FinanceEntry {
     public String title;
     public BigDecimal amount;
     public boolean isExpense;
+    public long objectDate;
+    public SimpleDateFormat dateFormat = new SimpleDateFormat("MM/d/yy");
 
+    public FinanceEntry() {
+    }
+
+    public FinanceEntry(String title, BigDecimal amount, boolean isExpense, long objectDate) {
+        this.title = title;
+        this.amount = amount;
+        this.isExpense = isExpense;
+        this.objectDate = objectDate;
+    }
+
+    public String toSerializedString() {
+        return title + "," + amount.toString() + "," + (isExpense ? "1" : "0") + "," + objectDate;
+    }
+
+    @Override
     public String toString() {
-        return title + "," + amount.toString() + "," + (isExpense ? "1" : "0");
+        StringBuilder builder = new StringBuilder();
+        if (isExpense) {
+            builder.append("-");
+        }
+        else {
+            builder.append("+");
+        }
+        Date date = new Date(objectDate);
+
+        builder.append("$" + amount.toString() + " " + title + "  " + dateFormat.format(date));
+
+        return builder.toString();
     }
 
     public static FinanceEntry fromString(String serializedString) {
@@ -21,6 +51,7 @@ public class FinanceEntry {
         entry.title = splitString[0];
         entry.amount = new BigDecimal(Double.valueOf(splitString[1]));
         entry.isExpense = (splitString[2].equals("1"));
+        entry.objectDate = Long.valueOf(splitString[3]);
         return entry;
     }
 
@@ -29,7 +60,7 @@ public class FinanceEntry {
 
         for (int i = 0; i < entryList.size(); i++) {
             FinanceEntry entry = entryList.get(i);
-            builder.append(entry.toString());
+            builder.append(entry.toSerializedString());
             if (entryList.size() != i -1) {
                 builder.append(";");
             }
