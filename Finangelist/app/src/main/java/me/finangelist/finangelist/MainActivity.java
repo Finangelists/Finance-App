@@ -14,11 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class MainActivity extends ActionBarActivity
@@ -29,6 +34,12 @@ public class MainActivity extends ActionBarActivity
     private Button btnSubmit;
     private ListView listViewMain;
     private Boolean textClear = false;
+    private RadioButton radioButtonExpense;
+
+    private ArrayAdapter<FinanceEntry> adapter;
+
+    private ArrayList<FinanceEntry> entries = new ArrayList<>();
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -57,6 +68,12 @@ public class MainActivity extends ActionBarActivity
         editTextDescription = (EditText) findViewById(R.id.txtDescription);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         listViewMain = (ListView) findViewById((R.id.listViewMain));
+        radioButtonExpense = (RadioButton) findViewById(R.id.rbnExpense);
+
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, entries);
+
+        listViewMain.setAdapter(adapter);
 
         editTextMoney.addTextChangedListener(new TextWatcher() {
             @Override
@@ -93,12 +110,21 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+        //String title, BigDecimal amount, boolean isExpense, long objectDate
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FinanceEntry newEntry = new FinanceEntry(editTextDescription.getText().toString(),
+                        new BigDecimal(Double.valueOf(editTextMoney.getText().toString())),
+                        radioButtonExpense.isChecked(),
+                        Calendar.getInstance().getTimeInMillis());
+                entries.add(newEntry);
+                adapter.add(newEntry);
+
                 textClear = true;
                 editTextMoney.getText().clear();
                 editTextDescription.setText("");
+
             }
         });
 
