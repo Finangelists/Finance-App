@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/listViewMain"
-        android:layout_below="@+id/txtDescription"
-        android:layout_above="@+id/txtTotalLabel" />
+        android:layout_above="@+id/txtTotalLabel"
+        android:layout_below="@+id/txtDescription" />
 
         <RadioGroup
             android:layout_width="wrap_content"
@@ -94,6 +94,43 @@
             android:layout_alignParentBottom="true"
             android:layout_toEndOf="@+id/radioGroup"
             android:textStyle="bold"/>
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="All"-->
+            <!--android:id="@+id/btnAll"-->
+            <!--android:layout_below="@+id/txtDescription"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_toStartOf="@+id/txtDescription"-->
+            <!--android:textSize="10dp"/>-->
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Day"-->
+            <!--android:id="@+id/btnDay"-->
+            <!--android:layout_below="@+id/txtDescription"-->
+            <!--android:layout_toEndOf="@+id/btnAll"-->
+            <!--android:textSize="10dp"/>-->
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Week"-->
+            <!--android:id="@+id/btnWeek"-->
+            <!--android:layout_below="@+id/txtDescription"-->
+            <!--android:layout_toEndOf="@+id/btnDay"-->
+            <!--android:textSize="10dp"/>-->
+
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Month"-->
+            <!--android:id="@+id/btnMonth"-->
+            <!--android:layout_below="@+id/txtDescription"-->
+            <!--android:layout_toEndOf="@+id/btnWeek"-->
+            <!--android:textSize="10dp"/>-->
 
     </RelativeLayout>
     <!-- android:layout_gravity="start" tells DrawerLayout to treat

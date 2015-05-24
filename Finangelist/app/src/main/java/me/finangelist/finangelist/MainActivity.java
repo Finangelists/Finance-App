@@ -53,6 +53,9 @@ public class MainActivity extends ActionBarActivity
     private FinanceAdapter adapter;
 
     private ArrayList<FinanceEntry> entries = new ArrayList<>();
+//    private ArrayList<FinanceEntry> entriesDay = new ArrayList<>();
+//    private ArrayList<FinanceEntry> entriesWeek = new ArrayList<>();
+//    private ArrayList<FinanceEntry> entriesMonth = new ArrayList<>();
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -164,6 +167,7 @@ public class MainActivity extends ActionBarActivity
                 editTextMoney.getText().clear();
                 editTextDescription.setText("");
                 editTextMoney.requestFocus();
+                adapter.notifyDataSetChanged();
 
             }
         });
@@ -311,6 +315,22 @@ public class MainActivity extends ActionBarActivity
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString(SHAREDPREFSKEY, FinanceEntry.serializeList(entries)).commit();
         updateTotal();
+
+//        for (FinanceEntry item : entries) {
+//            if (Math.abs(Calendar.getInstance().getTimeInMillis() - item.objectDate) < 86400000L){
+//                entriesDay.add(0, item);
+//                entriesWeek.add(0, item);
+//                entriesMonth.add(0, item);
+//            }
+//            else if (Math.abs(Calendar.getInstance().getTimeInMillis() - item.objectDate) < 604800000L) {
+//                entriesWeek.add(0, item);
+//                entriesMonth.add(0, item);
+//            }
+//            else if (Math.abs(Calendar.getInstance().getTimeInMillis() - item.objectDate) < 2629740000L){
+//                entriesMonth.add(0, item);
+//            }
+//
+//        }
     }
 
     private void updateTotal(){
