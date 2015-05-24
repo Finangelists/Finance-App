@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -41,10 +44,13 @@ public class MainActivity extends ActionBarActivity
     private ListView listViewMain;
     private Boolean textClear = false;
     private RadioButton radioButtonExpense;
+    private TextView finalTotal;
     private static final String SHAREDPREFSFILEKEY = "FinanceAppSharedPrefs";
     private static final String SHAREDPREFSKEY = "EntriesKey";
+    private BigDecimal netTotal = new BigDecimal(0);
 
-    private ArrayAdapter<FinanceEntry> adapter;
+
+    private FinanceAdapter adapter;
 
     private ArrayList<FinanceEntry> entries = new ArrayList<>();
 
@@ -72,6 +78,7 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        finalTotal = (TextView) findViewById(R.id.txtTotalMoney);
         loadEntriesFromPrefs();
         editTextMoney = (EditText) findViewById(R.id.txtMoneyEntered);
         editTextDescription = (EditText) findViewById(R.id.txtDescription);
@@ -81,7 +88,8 @@ public class MainActivity extends ActionBarActivity
 
 
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, entries);
+
+        adapter = new FinanceAdapter(this, android.R.layout.simple_list_item_1, entries);
 
         listViewMain.setAdapter(adapter);
 
@@ -129,6 +137,18 @@ public class MainActivity extends ActionBarActivity
                     return;
                 }
 
+                String description = editTextDescription.getText().toString();
+
+                if (!TextUtils.isEmpty(description)){
+                    if (!description.matches("^[a-zA-Z0-9 ]*$")){
+                        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                        alert.setMessage("Please don't use special characters");
+                        alert.setNegativeButton("Ok", null);
+                        alert.show();
+                        return;
+                    }
+
+                }
                 DecimalFormat format = new DecimalFormat();
                 format.setParseBigDecimal(true);
 
@@ -222,7 +242,12 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_deleteAll) {
+
+            entries.clear();
+            updatePrefs();
+
+            Toast.makeText(this, "Deleted", Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -274,6 +299,7 @@ public class MainActivity extends ActionBarActivity
         String mString = mPrefs.getString(SHAREDPREFSKEY, null);
         if (!TextUtils.isEmpty(mString)){
             entries = FinanceEntry.deserializeList(mString);
+            updateTotal();
         }
 
     }
@@ -282,7 +308,28 @@ public class MainActivity extends ActionBarActivity
         SharedPreferences mPrefs = getSharedPreferences(SHAREDPREFSFILEKEY, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString(SHAREDPREFSKEY, FinanceEntry.serializeList(entries)).commit();
+        updateTotal();
+    }
 
+    private void updateTotal(){
+        netTotal = new BigDecimal(0);
+        for (FinanceEntry items : entries){
+            if (items.isExpense){
+                netTotal = netTotal.subtract(items.amount);
+            }
+            else {
+                netTotal = netTotal.add(items.amount);
+            }
+
+        }
+        if (netTotal.toString().contains("-")){
+            finalTotal.setText("-" + NumberFormat.getCurrencyInstance().format(netTotal.abs()));
+            finalTotal.setTextColor(getResources().getColor(R.color.darkRed));
+        }
+        else {
+            finalTotal.setText(NumberFormat.getCurrencyInstance().format(netTotal));
+            finalTotal.setTextColor(getResources().getColor(R.color.darkGreen));
+        }
 
     }
 }

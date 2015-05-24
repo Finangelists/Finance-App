@@ -1,6 +1,7 @@
 package me.finangelist.finangelist;
 
 import android.content.Context;
+import android.text.SpannableString;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
@@ -8,16 +9,11 @@ import java.util.ArrayList;
 /**
  * Created by Marc on 05/23/2015.
  */
-public class EntriesAdapter extends ArrayAdapter<String> {
+public class EntriesAdapter extends ArrayAdapter<FinanceEntry> {
 
-    private final ArrayList<String> items;
 
-    public EntriesAdapter(Context context, int resourceId, ArrayList<String> items) {
+    public EntriesAdapter(Context context, int resourceId, ArrayList<FinanceEntry> items) {
         super(context, resourceId, items);
-        this.items = items;
     }
 
-    public ArrayList<String> getItems() {
-        return items;
-    }
 }

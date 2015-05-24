@@ -1,6 +1,12 @@
 package me.finangelist.finangelist;
 
+import android.app.Application;
+import android.content.Context;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,20 +40,25 @@ public class FinanceEntry {
         return title + "," + amount.toString() + "," + (isExpense ? "1" : "0") + "," + objectDate;
     }
 
-    @Override
-    public String toString() {
+    public SpannableString toSpannableString(Context context) {
         StringBuilder builder = new StringBuilder();
+        int color;
         if (isExpense) {
             builder.append("-");
+            color = R.color.darkRed;
         }
         else {
             builder.append("+");
+            color = R.color.darkGreen;
         }
         Date date = new Date(objectDate);
 
-        builder.append("$" + amount.toString() + " " + title + "  " + dateFormat.format(date));
+        builder.append(NumberFormat.getCurrencyInstance().format(amount) + " " + title + "  " + dateFormat.format(date));
 
-        return builder.toString();
+        SpannableString styledString = new SpannableString(builder.toString());
+        styledString.setSpan(new ForegroundColorSpan(context.getResources().getColor(color)), 0, styledString.toString().indexOf(" "), 0);
+
+        return styledString;
     }
 
     public static FinanceEntry fromString(String serializedString) {
