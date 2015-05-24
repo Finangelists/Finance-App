@@ -62,7 +62,7 @@
         android:layout_below="@+id/txtMoneyEntered"
         android:layout_alignStart="@+id/txtMoneyEntered"
         android:layout_alignEnd="@+id/btnSubmit"
-        android:hint="description"
+        android:hint="Description"
 
         />
     <TextView
