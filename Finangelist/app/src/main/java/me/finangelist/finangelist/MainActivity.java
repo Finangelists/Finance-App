@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -114,12 +115,16 @@ public class MainActivity extends ActionBarActivity
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                DecimalFormat format = new DecimalFormat();
+                format.setParseBigDecimal(true);
+
                 FinanceEntry newEntry = new FinanceEntry(editTextDescription.getText().toString(),
-                        new BigDecimal(Double.valueOf(editTextMoney.getText().toString())),
+                       new BigDecimal(editTextMoney.getText().toString().replaceAll("[$,]", "")),
                         radioButtonExpense.isChecked(),
                         Calendar.getInstance().getTimeInMillis());
-                entries.add(newEntry);
-                adapter.add(newEntry);
+                //entries.add(0, newEntry);
+                adapter.insert(newEntry, 0);
 
                 textClear = true;
                 editTextMoney.getText().clear();
