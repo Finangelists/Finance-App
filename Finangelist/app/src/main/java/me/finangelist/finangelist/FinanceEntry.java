@@ -19,7 +19,12 @@ public class FinanceEntry {
     }
 
     public FinanceEntry(String title, BigDecimal amount, boolean isExpense, long objectDate) {
-        this.title = title;
+        if (title == null){
+            this.title = "";
+        }
+        else{
+            this.title = title;
+        }
         this.amount = amount;
         this.isExpense = isExpense;
         this.objectDate = objectDate;
@@ -49,7 +54,7 @@ public class FinanceEntry {
         FinanceEntry entry =  new FinanceEntry();
         String[] splitString = serializedString.split(",");
         entry.title = splitString[0];
-        entry.amount = new BigDecimal(Double.valueOf(splitString[1]));
+        entry.amount = new BigDecimal(splitString[1]);
         entry.isExpense = (splitString[2].equals("1"));
         entry.objectDate = Long.valueOf(splitString[3]);
         return entry;

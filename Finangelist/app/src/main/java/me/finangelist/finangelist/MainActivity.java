@@ -1,12 +1,16 @@
 package me.finangelist.finangelist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +41,8 @@ public class MainActivity extends ActionBarActivity
     private ListView listViewMain;
     private Boolean textClear = false;
     private RadioButton radioButtonExpense;
+    private static final String SHAREDPREFSFILEKEY = "FinanceAppSharedPrefs";
+    private static final String SHAREDPREFSKEY = "EntriesKey";
 
     private ArrayAdapter<FinanceEntry> adapter;
 
@@ -65,11 +72,13 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        loadEntriesFromPrefs();
         editTextMoney = (EditText) findViewById(R.id.txtMoneyEntered);
         editTextDescription = (EditText) findViewById(R.id.txtDescription);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         listViewMain = (ListView) findViewById((R.id.listViewMain));
         radioButtonExpense = (RadioButton) findViewById(R.id.rbnExpense);
+
 
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, entries);
@@ -116,6 +125,10 @@ public class MainActivity extends ActionBarActivity
             @Override
             public void onClick(View v) {
 
+                if (TextUtils.isEmpty(editTextMoney.getText())) {
+                    return;
+                }
+
                 DecimalFormat format = new DecimalFormat();
                 format.setParseBigDecimal(true);
 
@@ -123,14 +136,36 @@ public class MainActivity extends ActionBarActivity
                        new BigDecimal(editTextMoney.getText().toString().replaceAll("[$,]", "")),
                         radioButtonExpense.isChecked(),
                         Calendar.getInstance().getTimeInMillis());
-                //entries.add(0, newEntry);
-                adapter.insert(newEntry, 0);
+                entries.add(0, newEntry);
+                //adapter.insert(newEntry, 0);
+                updatePrefs();
 
                 textClear = true;
                 editTextMoney.getText().clear();
                 editTextDescription.setText("");
+                editTextMoney.requestFocus();
 
             }
+        });
+
+        listViewMain.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setMessage("Delete Item?");
+                alert.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        entries.remove(position);
+                        adapter.notifyDataSetChanged();
+                        updatePrefs();
+                    }
+                });
+                alert.setPositiveButton("No", null);
+                alert.show();
+                return true;
+            }
+
         });
 
     }
@@ -234,4 +269,20 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    private void loadEntriesFromPrefs(){
+        SharedPreferences mPrefs = getSharedPreferences(SHAREDPREFSFILEKEY, 0);
+        String mString = mPrefs.getString(SHAREDPREFSKEY, null);
+        if (!TextUtils.isEmpty(mString)){
+            entries = FinanceEntry.deserializeList(mString);
+        }
+
+    }
+
+    private void updatePrefs(){
+        SharedPreferences mPrefs = getSharedPreferences(SHAREDPREFSFILEKEY, 0);
+        SharedPreferences.Editor mEditor = mPrefs.edit();
+        mEditor.putString(SHAREDPREFSKEY, FinanceEntry.serializeList(entries)).commit();
+
+
+    }
 }
